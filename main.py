@@ -1,8 +1,9 @@
 from fastapi import FastAPI, HTTPException
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from typing import Union
 import json
 import math
+import random
 
 #===== Structure de données : Dictionnaire indexé par pokemon id =====#
 with open("pokemons.json", "r") as f:
@@ -27,6 +28,8 @@ class Pokemon() :
 
 app = FastAPI()
 
+
+#===========================GET============================
 @app.get("/pokemons/", response_model=list[Pokemon])
 def get_all_pokemons(page: int=1, items: int=10) -> list[Pokemon]:
 
@@ -39,7 +42,6 @@ def get_all_pokemons(page: int=1, items: int=10) -> list[Pokemon]:
     res = []
 
     for id in range(start, stop) :
-        print(id)
         res.append(Pokemon(**list_pokemons[id]))
     
     return res
@@ -135,3 +137,9 @@ def search_pokemons(
         return res
     
     raise HTTPException(status_code=404, detail="Aucun Pokemon ne répond aux critères de recherche")
+
+#===========================POST============================
+@app.post("/pokemon/")
+def create_pokemon(pokemon: Pokemon) -> Pokemon:
+    list_pokemons[pokemon.id] = asdict(pokemon)
+    return pokemon
