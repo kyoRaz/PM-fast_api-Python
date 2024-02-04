@@ -23,6 +23,7 @@ class Pokemon() :
     defense_special: int
     speed: int
     evolution_id: Union[int, None] = None
+#======================================================================
 
 app = FastAPI()
 
@@ -66,7 +67,11 @@ def get_all_types()->list[str]:
 @app.get("/pokemons/search/", response_model=list[Pokemon])
 def search_pokemons(
     types: Union[str, None] = None,
-    evo : Union[str, None] = None
+    evo : Union[str, None] = None,
+    totalgt : Union[int, None] = None,
+    totallt : Union[int, None] = None,
+    sortby : Union[str, None] = None,
+    order : Union[str, None] = None,
 )->Union[list[Pokemon], None] :
     
     filtered_list = []
@@ -82,13 +87,46 @@ def search_pokemons(
     if evo is not None :
         tmp = filtered_list if filtered_list else pokemons_list
         new = []
-        
+
         for pokemon in tmp :
             if evo == "true" and "evolution_id" in pokemon:
                 new.append(pokemon)
             if evo == "false" and "evolution_id" not in pokemon:
                 new.append(pokemon)
+
         filtered_list = new
+
+    #On filtre sur greater than total
+    if totalgt is not None :
+        tmp = filtered_list if filtered_list else pokemons_list
+        new = []
+
+        for pokemon in tmp :
+            if pokemon["total"] > totalgt:
+                new.append(pokemon)
+
+        filtered_list = new
+
+    #On filtre sur less than total
+    if totallt is not None :
+        tmp = filtered_list if filtered_list else pokemons_list
+        new = []
+
+        for pokemon in tmp :
+            if pokemon["total"] < totallt:
+                new.append(pokemon)
+
+        filtered_list = new
+
+    #On gére le tri
+    if sortby is not None and sortby in ["id","name","total"] :
+        filtered_list = filtered_list if filtered_list else pokemons_list
+        sorting_order = False
+        if order == "asc" : sorting_order = False
+        if order == "desc" : sorting_order = True
+
+        filtered_list = sorted(filtered_list, key=lambda d: d[sortby], reverse=sorting_order)
+
         
     #Réponse           
     if filtered_list :
