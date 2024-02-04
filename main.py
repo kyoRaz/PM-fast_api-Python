@@ -14,7 +14,7 @@ list_pokemons = {k+1:v for k, v in enumerate(pokemons_list)}
 class Pokemon() :
     id: int
     name: str
-    type: list[str]
+    types: list[str]
     total: int
     hp: int
     attack: int
@@ -50,3 +50,25 @@ def get_pokemon_by_id(id: int) -> Pokemon :
         raise HTTPException(status_code=404, detail="Pokemon inconnu")
     
     return Pokemon(**list_pokemons[id])
+
+@app.get("/pokemon/search/", response_model=list[Pokemon])
+def kloug(
+    types: Union[str, None] = None
+)->Union[list[Pokemon], None] :
+    
+    tmp = []
+    res = []
+
+    #On gère les types
+    if types is not None :
+        for pokemon in pokemons_list :
+            if set(types.split(",")).issubset(pokemon["types"]) :
+                tmp.append(pokemon)
+
+    #Réponse           
+    if tmp :
+        for pokemon in tmp :
+            res.append(Pokemon(**pokemon))
+        return res
+    
+    raise HTTPException(status_code=404, detail="Aucun Pokemon ne répond aux critères de recherche")
