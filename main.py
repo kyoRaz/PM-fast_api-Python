@@ -51,23 +51,48 @@ def get_pokemon_by_id(id: int) -> Pokemon :
     
     return Pokemon(**list_pokemons[id])
 
-@app.get("/pokemon/search/", response_model=list[Pokemon])
-def kloug(
-    types: Union[str, None] = None
+@app.get("/types")
+def get_all_types()->list[str]:
+
+    types = []
+    for pokemon in pokemons_list :
+        for type in pokemon["types"] :
+            if type not in types :
+                types.append(type)
+    types.sort()
+    return types
+
+
+@app.get("/pokemons/search/", response_model=list[Pokemon])
+def search_pokemons(
+    types: Union[str, None] = None,
+    evo : Union[str, None] = None
 )->Union[list[Pokemon], None] :
     
-    tmp = []
+    filtered_list = []
     res = []
 
-    #On gère les types
+    #On filtre les types
     if types is not None :
         for pokemon in pokemons_list :
             if set(types.split(",")).issubset(pokemon["types"]) :
-                tmp.append(pokemon)
+                filtered_list.append(pokemon)
 
-    #Réponse           
-    if tmp :
+    #On filtre les evolutions
+    if evo is not None :
+        tmp = filtered_list if filtered_list else pokemons_list
+        new = []
+        
         for pokemon in tmp :
+            if evo == "true" and "evolution_id" in pokemon:
+                new.append(pokemon)
+            if evo == "false" and "evolution_id" not in pokemon:
+                new.append(pokemon)
+        filtered_list = new
+        
+    #Réponse           
+    if filtered_list :
+        for pokemon in filtered_list :
             res.append(Pokemon(**pokemon))
         return res
     
