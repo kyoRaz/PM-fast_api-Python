@@ -32,6 +32,13 @@ app = FastAPI()
 def get_total_pokemons() :
     return {"total":len(list_pokemons)}
 
+@app.get("/pokemons1", response_model=list[Pokemon])
+def get_all_pokemons1() -> list[Pokemon]:
+    res = []
+    for id in list_pokemons :
+        res.append(Pokemon(**list_pokemons[id]))
+    return res
+
 @app.get("/pokemons/", response_model=list[Pokemon])
 def get_all_pokemons(page: int=1, items: int=10) -> list[Pokemon]:
 
