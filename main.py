@@ -36,15 +36,20 @@ def get_all_pokemons(page: int=1, items: int=10) -> list[Pokemon]:
     items = min(items, 20)
     max_page = math.ceil(len(list_pokemons) / items)
     current_page = min(page, max_page)
-    start = (current_page-1)*items + 1
-    stop = start + items if start + items <= len(list_pokemons) + 1 else len(list_pokemons) + 1
+    start = (current_page-1)*items
+    stop = start + items if start + items <= len(list_pokemons) else len(list_pokemons)
+    sublist = (list(list_pokemons))[start:stop]
 
     res = []
 
-    for id in range(start, stop) :
+    for id in sublist :
         res.append(Pokemon(**list_pokemons[id]))
     
     return res
+
+@app.get("/total_pokemons")
+def get_total_pokemons() :
+    return {"total":len(list_pokemons)}
 
 @app.get("/pokemon/{id}", response_model=Pokemon)
 def get_pokemon_by_id(id: int) -> Pokemon :
@@ -139,7 +144,29 @@ def search_pokemons(
     raise HTTPException(status_code=404, detail="Aucun Pokemon ne répond aux critères de recherche")
 
 #===========================POST============================
-@app.post("/pokemon/")
+@app.post("/pokemon/", response_model=Pokemon)
 def create_pokemon(pokemon: Pokemon) -> Pokemon:
+    if pokemon.id in list_pokemons :
+        raise HTTPException(status_code=404, detail=f"Le pokemon {pokemon.id} existe déjà !")
+    
     list_pokemons[pokemon.id] = asdict(pokemon)
     return pokemon
+
+#===========================PUT============================
+@app.put("/pokemon/{id}", response_model=Pokemon)
+def update_pokemon(id: int, pokemon: Pokemon) -> Pokemon:
+    if id not in list_pokemons :
+        raise HTTPException(status_code=404, detail=f"Le pokemon {id} n'existe pas.")
+    
+    list_pokemons[id] = asdict(pokemon)
+    return pokemon
+
+#===========================DELETE============================
+@app.delete("/pokemon/{id}", response_model=Pokemon)
+def delete_pokemon(id: int) -> Pokemon:
+    if id in list_pokemons :
+        pokemon = Pokemon(**list_pokemons[id])
+        del list_pokemons[id]
+        return pokemon
+    
+    raise HTTPException(status_code=404, detail=f"Le pokemon {id} n'existe pas.")
