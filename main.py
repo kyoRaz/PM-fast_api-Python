@@ -3,7 +3,6 @@ from dataclasses import dataclass, asdict
 from typing import Union
 import json
 import math
-import random
 
 #===== Structure de données : Dictionnaire indexé par pokemon id =====#
 with open("pokemons.json", "r") as f:
@@ -28,8 +27,11 @@ class Pokemon() :
 
 app = FastAPI()
 
-
 #===========================GET============================
+@app.get("/total_pokemons")
+def get_total_pokemons() :
+    return {"total":len(list_pokemons)}
+
 @app.get("/pokemons/", response_model=list[Pokemon])
 def get_all_pokemons(page: int=1, items: int=10) -> list[Pokemon]:
 
@@ -47,15 +49,11 @@ def get_all_pokemons(page: int=1, items: int=10) -> list[Pokemon]:
     
     return res
 
-@app.get("/total_pokemons")
-def get_total_pokemons() :
-    return {"total":len(list_pokemons)}
-
 @app.get("/pokemon/{id}", response_model=Pokemon)
 def get_pokemon_by_id(id: int) -> Pokemon :
 
-    if id < 1 or id > len(pokemons_list) :
-        raise HTTPException(status_code=404, detail="Pokemon inconnu")
+    if id not in list_pokemons :
+        raise HTTPException(status_code=404, detail="Ce pokemon n'existe pas")
     
     return Pokemon(**list_pokemons[id])
 
