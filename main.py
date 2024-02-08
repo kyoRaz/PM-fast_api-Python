@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Path
 from dataclasses import dataclass, asdict
 from typing import Union
 import json
@@ -29,41 +29,53 @@ app = FastAPI()
 
 #===========================GET============================
 @app.get("/total_pokemons")
-def get_total_pokemons() :
+def get_total_pokemons() -> dict:
     return {"total":len(list_pokemons)}
 
-@app.get("/pokemons1", response_model=list[Pokemon])
+@app.get("/pokemons")
 def get_all_pokemons1() -> list[Pokemon]:
     res = []
     for id in list_pokemons :
         res.append(Pokemon(**list_pokemons[id]))
     return res
 
-@app.get("/pokemons/", response_model=list[Pokemon])
-def get_all_pokemons(page: int=1, items: int=10) -> list[Pokemon]:
-
-    items = min(items, 20)
-    max_page = math.ceil(len(list_pokemons) / items)
-    current_page = min(page, max_page)
-    start = (current_page-1)*items
-    stop = start + items if start + items <= len(list_pokemons) else len(list_pokemons)
-    sublist = (list(list_pokemons))[start:stop]
-
-    res = []
-
-    for id in sublist :
-        res.append(Pokemon(**list_pokemons[id]))
-    
-    return res
-
-@app.get("/pokemon/{id}", response_model=Pokemon)
-def get_pokemon_by_id(id: int) -> Pokemon :
+@app.get("/pokemon/{id}")
+def get_pokemon_by_id(id: int = Path(ge=1)) -> Pokemon :
 
     if id not in list_pokemons :
         raise HTTPException(status_code=404, detail="Ce pokemon n'existe pas")
     
     return Pokemon(**list_pokemons[id])
 
+#===========================POST============================
+@app.post("/pokemon/")
+def create_pokemon(pokemon: Pokemon) -> Pokemon:
+    if pokemon.id in list_pokemons :
+        raise HTTPException(status_code=404, detail=f"Le pokemon {pokemon.id} existe déjà !")
+    
+    list_pokemons[pokemon.id] = asdict(pokemon)
+    return pokemon
+
+#===========================PUT============================
+@app.put("/pokemon/{id}")
+def update_pokemon(pokemon: Pokemon, id: int = Path(ge=1)) -> Pokemon:
+    if id not in list_pokemons :
+        raise HTTPException(status_code=404, detail=f"Le pokemon {id} n'existe pas.")
+    
+    list_pokemons[id] = asdict(pokemon)
+    return pokemon
+
+#===========================DELETE============================
+@app.delete("/pokemon/{id}")
+def delete_pokemon(id: int = Path(ge=1)) -> Pokemon:
+    if id in list_pokemons :
+        pokemon = Pokemon(**list_pokemons[id])
+        del list_pokemons[id]
+        return pokemon
+    
+    raise HTTPException(status_code=404, detail=f"Le pokemon {id} n'existe pas.")
+
+#===========================GET============================
 @app.get("/types")
 def get_all_types()->list[str]:
 
@@ -76,7 +88,7 @@ def get_all_types()->list[str]:
     return types
 
 
-@app.get("/pokemons/search/", response_model=list[Pokemon])
+@app.get("/pokemons/search/")
 def search_pokemons(
     types: Union[str, None] = None,
     evo : Union[str, None] = None,
@@ -148,30 +160,20 @@ def search_pokemons(
     
     raise HTTPException(status_code=404, detail="Aucun Pokemon ne répond aux critères de recherche")
 
-#===========================POST============================
-@app.post("/pokemon/", response_model=Pokemon)
-def create_pokemon(pokemon: Pokemon) -> Pokemon:
-    if pokemon.id in list_pokemons :
-        raise HTTPException(status_code=404, detail=f"Le pokemon {pokemon.id} existe déjà !")
-    
-    list_pokemons[pokemon.id] = asdict(pokemon)
-    return pokemon
+#=====Tous les Pokémons avec la pagination=====
+@app.get("/pokemons2/")
+def get_all_pokemons(page: int=1, items: int=10) -> list[Pokemon]:
 
-#===========================PUT============================
-@app.put("/pokemon/{id}", response_model=Pokemon)
-def update_pokemon(id: int, pokemon: Pokemon) -> Pokemon:
-    if id not in list_pokemons :
-        raise HTTPException(status_code=404, detail=f"Le pokemon {id} n'existe pas.")
-    
-    list_pokemons[id] = asdict(pokemon)
-    return pokemon
+    items = min(items, 20)
+    max_page = math.ceil(len(list_pokemons) / items)
+    current_page = min(page, max_page)
+    start = (current_page-1)*items
+    stop = start + items if start + items <= len(list_pokemons) else len(list_pokemons)
+    sublist = (list(list_pokemons))[start:stop]
 
-#===========================DELETE============================
-@app.delete("/pokemon/{id}", response_model=Pokemon)
-def delete_pokemon(id: int) -> Pokemon:
-    if id in list_pokemons :
-        pokemon = Pokemon(**list_pokemons[id])
-        del list_pokemons[id]
-        return pokemon
+    res = []
+
+    for id in sublist :
+        res.append(Pokemon(**list_pokemons[id]))
     
-    raise HTTPException(status_code=404, detail=f"Le pokemon {id} n'existe pas.")
+    return res
