@@ -1,0 +1,33 @@
+E1 - Creer un  environnement  Virtuel
+python3.9 -m venv .env
+linux : source .env/bin/activate
+
+py -m venv .env
+windows : .env\Scripts\activate
+
+deactivate  pour areter  env virtuel 
+
+Génère un fichier de dépendances :
+pip freeze > requirements.txt
+
+Pour reproduire un environnement virtuel à partir d’un requirements.txt 
+pip install -r requirements.txt
+
+
+installer le paquet suivant pour utilser fast API
+pip install fastapi uvicorn
+
+lancer projet
+uvicorn app.main:app --reload
+
+
+
+
+
+
+------------ créer structurer -------------
+
+type nul > ./__init__.py
+type nul > ./api/__init__.py
+type nul > ./models/__init__.py
+type nul > ./services/__init__.py
