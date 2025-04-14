@@ -1,9 +1,10 @@
-from fastapi import HTTPException, Path
+from fastapi import HTTPException
 from typing import Union
-from app.models.pokemon import Pokemon
-from app.services.pokemon_service import get_pokemon_data
+from app.pokemons.models import Pokemon
+from app.pokemons.service import get_pokemon_data
 import math
 
+# Chargement des données
 pokemons_list, list_pokemons = get_pokemon_data()
 
 def get_total_pokemons() -> dict:
@@ -19,7 +20,7 @@ def get_pokemon_by_id(id: int) -> Pokemon:
 
 def create_pokemon(pokemon: Pokemon) -> Pokemon:
     if pokemon.id in list_pokemons:
-        raise HTTPException(status_code=400, detail=f"Le pokemon {pokemon.id} existe d\u00e9j\u00e0 !")
+        raise HTTPException(status_code=400, detail=f"Le pokemon {pokemon.id} existe déjà !")
     list_pokemons[pokemon.id] = pokemon.__dict__
     return pokemon
 
@@ -85,7 +86,7 @@ def search_pokemons(
     if filtered_list:
         return [Pokemon(**pokemon) for pokemon in filtered_list]
 
-    raise HTTPException(status_code=404, detail="Aucun Pokemon ne r\u00e9pond aux crit\u00e8res de recherche")
+    raise HTTPException(status_code=404, detail="Aucun Pokemon ne répond aux critères de recherche")
 
 def get_all_pokemons_paginated(page: int = 1, items: int = 10) -> list[Pokemon]:
     items = min(items, 20)
