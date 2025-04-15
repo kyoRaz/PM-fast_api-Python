@@ -1,9 +1,11 @@
 from fastapi import HTTPException
 from app.users.models import User
 from app.users.schema import UserCreate 
-from app.users.service import create_user ,get_all_users
+from app.users.service import create_user ,get_all_users ,get_user_by_id
 from sqlmodel import Session
 from typing import List
+from uuid import UUID
+
 
 # Simuler une base en mémoire
 users_db = {}
@@ -13,8 +15,8 @@ def createUser(user: UserCreate,session: Session ) -> User:
     create_user(new_user,session)
     return new_user
 
-def getUser(user_id: int) -> User:
-    user = users_db.get(user_id)
+def getUser(user_id : UUID , session: Session) -> User:
+    user = get_user_by_id(user_id,session)
     if not user:
         raise HTTPException(status_code=404, detail="Utilisateur non trouv\u00e9.")
     return user
