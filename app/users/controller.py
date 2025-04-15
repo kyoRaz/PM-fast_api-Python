@@ -1,14 +1,15 @@
 from fastapi import HTTPException
 from app.users.models import User
+from app.users.schema import UserCreate
 
 # Simuler une base en mémoire
 users_db = {}
 
-def create_user(user: User) -> User:
-    if user.id in users_db:
-        raise HTTPException(status_code=400, detail="L'utilisateur existe d\u00e9j\u00e0.")
-    users_db[user.id] = user
-    return user
+def create_user(user: UserCreate) -> User:
+    user_id = len(users_db) + 1
+    new_user = User(id=user_id,**user.dict())
+    users_db[new_user.id] = new_user
+    return new_user
 
 def get_user(user_id: int) -> User:
     user = users_db.get(user_id)
