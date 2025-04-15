@@ -1,7 +1,5 @@
 from sqlmodel import SQLModel, create_engine, Session
-import os
-
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://user:password@localhost:5432/fastapi_db")
+from app.core.config import DATABASE_URL
 
 engine = create_engine(DATABASE_URL, echo=True)
 

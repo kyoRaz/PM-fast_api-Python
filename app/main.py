@@ -7,17 +7,19 @@ import os
 from pathlib import Path
 import asyncio
 import uvicorn
+from sqlmodel import SQLModel
+from app.core.database import engine
 
 # === Chargement des variables d'environnement ===
 env_path = Path(__file__).resolve().parent / ".env"
 load_dotenv(dotenv_path=env_path)
 
-# DATABASE_URL = os.getenv("DATABASE_URL")
-# SECRET_KEY = os.getenv("SECRET_KEY")
-# DEBUG = os.getenv("DEBUG", "False") == "True"
+# === BDD ===
 
-# print(f"DATABASE_URL: {DATABASE_URL}")
-# print(f"DEBUG: {DEBUG}")
+def create_db():
+    SQLModel.metadata.create_all(engine)
+    print("table crées")
+
 
 # === Création de l'app FastAPI ===
 app = FastAPI()
@@ -25,6 +27,11 @@ app = FastAPI()
 app.include_router(pokemon_router)
 app.include_router(user_router)
 app.include_router(department_router)
+
+# Initialisation de la base au démarrage
+@app.on_event("startup")
+def on_startup():
+    create_db()
 
 # === Fonction de lancement propre avec gestion d'erreurs ===
 async def start():

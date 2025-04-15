@@ -1,10 +1,11 @@
-from dataclasses import dataclass
-from typing import Union
+import uuid
+from typing import Optional
+from sqlmodel import SQLModel, Field
+from uuid import UUID
 
-@dataclass(kw_only=True)
-class User:
-    id: Union[int,None]=None
+class User(SQLModel, table=True):
+    id: UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     name: str
     email: str
-    password: Union[str,None]=None
+    password: Optional[str] = None
     is_active: bool = True
