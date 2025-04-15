@@ -32,3 +32,7 @@ type nul > ./app/api/__init__.py
 type nul > ./app/models/__init__.py
 type nul > ./app/services/__init__.py
 type nul > ./app/controllers/__init__.py
+
+
+
+------------ package installer  -------------
