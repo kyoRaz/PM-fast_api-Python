@@ -1,6 +1,6 @@
 from fastapi import HTTPException
 from app.users.models import User
-from app.users.schema import UserCreate
+from app.users.schema import UserCreate 
 
 # Simuler une base en mémoire
 users_db = {}
