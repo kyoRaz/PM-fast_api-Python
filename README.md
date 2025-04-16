@@ -1,8 +1,6 @@
-# Fast API : Mise en place d'une API pour Pokemons
+# Fast API : Mise en place d'une API 
 
 ## Screenshots
-
-![image](https://drive.google.com/uc?export=view&id=1nbcsVC8JANUrOaOO42k_3PDsgiFgM6wu)
 
 # Tools
 
