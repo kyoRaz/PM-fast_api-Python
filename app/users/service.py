@@ -29,3 +29,12 @@ def update_user(user_id: UUID, updated_data: dict, session = Session ) -> User |
     session.commit()
     session.refresh(user)
     return user
+
+def delete_user(user_id: UUID, session: Session) -> bool:
+    user = session.get(User, user_id)
+    if not user:
+        return None  
+
+    session.delete(user)
+    session.commit()
+    return True

@@ -29,5 +29,9 @@ def route_update_user(user_id : UUID,updatedData : UserUpdate ,session: Session 
     return userCtrl.updateUser(user_id ,updatedData, session)
 
 @router.patch("/{user_id}" , response_model=UserOut)
-def route_update_user(user_id : UUID,updatedData : UserUpdate ,session: Session = Depends(get_session)):
+def route_patch_user(user_id : UUID,updatedData : UserUpdate ,session: Session = Depends(get_session)):
     return userCtrl.patchUser(user_id ,updatedData, session)
+
+@router.delete("/{user_id}")
+def route_delete_user(user_id : UUID ,session: Session = Depends(get_session)):
+    return userCtrl.deleteUser(user_id , session)

@@ -5,6 +5,7 @@ import app.users.service as userService
 from sqlmodel import Session
 from typing import List
 from uuid import UUID
+from fastapi.responses import JSONResponse
 
 
 # Simuler une base en mémoire
@@ -32,3 +33,12 @@ def updateUser(user_id: UUID,updated_data:UserUpdate , session: Session ) -> Lis
 def patchUser(user_id: UUID,updated_data:UserUpdate , session: Session ) -> List[User]:
     updated_data=updated_data.model_dump(exclude_unset=True)
     return userService.update_user(user_id,updated_data,session)
+
+def deleteUser(user_id : UUID , session: Session) :
+    user = userService.delete_user(user_id,session)
+    if not user:
+        raise HTTPException(status_code=500, detail="suppression echoué")
+    return JSONResponse(
+        status_code=200,
+        content={"message": "Utilisateur supprimé avec succès", "user_id": str(user_id)}
+    )
