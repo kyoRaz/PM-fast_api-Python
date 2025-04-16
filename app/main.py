@@ -1,7 +1,7 @@
 from fastapi import FastAPI , Request
 from app.pokemons.router import router as pokemon_router
-from app.users.router import router as user_router
-from app.departments.router import router as department_router
+from app.routes.userRouter import router as user_router
+from app.routes.departementRouter import router as department_router
 from dotenv import load_dotenv
 import os
 from pathlib import Path

@@ -1,7 +1,7 @@
 from fastapi import HTTPException
-from app.users.models import User
-from app.users.schema import UserCreate, UserUpdate
-import app.users.service as userService
+from app.models.userModels import User
+from app.schemas.schema import UserCreate, UserUpdate
+import app.services.userService as userService
 from sqlmodel import Session
 from typing import List
 from uuid import UUID

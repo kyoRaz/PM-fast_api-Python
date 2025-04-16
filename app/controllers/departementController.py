@@ -1,5 +1,5 @@
 from fastapi import HTTPException
-from app.departments.model import Department
+from app.models.departementModel import Department
 
 departments_db = {}
 

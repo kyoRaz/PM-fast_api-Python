@@ -1,6 +1,6 @@
 from pydantic import BaseModel, EmailStr
 from uuid import UUID
-from app.users.models import User
+from app.models.userModels import User
 from typing import Optional
 
 class UserCreate(BaseModel):

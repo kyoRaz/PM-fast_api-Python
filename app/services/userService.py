@@ -1,5 +1,5 @@
 from sqlmodel import select, Session
-from app.users.models import User
+from app.models.userModels import User
 from uuid import UUID
 
 

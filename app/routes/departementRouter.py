@@ -1,6 +1,6 @@
 from fastapi import APIRouter
-from app.departments.model import Department
-from app.departments.controller import create_department, get_department
+from app.models.departementModel import Department
+from app.controllers.departementController import create_department, get_department
 
 router = APIRouter(prefix="/departments", tags=["Departments"])
 

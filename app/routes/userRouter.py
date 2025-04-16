@@ -3,8 +3,8 @@ from sqlmodel import Session
 from typing import List
 from uuid import UUID
 from app.core.database import get_session
-from app.users.schema import UserCreate ,UserOut , UserUpdate
-import app.users.controller as userCtrl
+from app.schemas.schema import UserCreate ,UserOut , UserUpdate
+import app.controllers.userController as userCtrl
 
 
 router = APIRouter(prefix="/users", tags=["Users"])
