@@ -36,3 +36,6 @@ type nul > ./app/controllers/__init__.py
 
 
 ------------ package installer  -------------
+pip install python-dotenv
+pip install sqlmodel psycopg2-binary
+
